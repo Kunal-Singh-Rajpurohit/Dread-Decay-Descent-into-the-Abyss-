@@ -80,8 +80,8 @@ export function CombatUI({combat,player,onAction,onPart,onAbility}){
     content = null;
   }
 
-  return(<div style={{position:"absolute",inset:0,background:"rgba(0,0,0,0.94)",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Courier New',monospace",zIndex:40}}>
-    <div style={{border:`2px solid ${en.boss?"#9333ea":"#3a0808"}`,borderRadius:4,backgroundImage:"url('/ui_panel.png')",backgroundSize:"100% 100%",imageRendering:"pixelated",padding:20,width:500,maxWidth:"95vw",boxShadow:`0 0 30px ${en.boss?"rgba(147,51,234,0.2)":"rgba(153,27,27,0.2)"}`}}>
+  return(<div style={{position:"absolute",left:0,right:0,bottom:60,display:"flex",justifyContent:"center",fontFamily:"'Courier New',monospace",zIndex:40,pointerEvents:"none"}}>
+    <div style={{pointerEvents:"auto",border:`2px solid ${en.boss?"#9333ea":"#3a0808"}`,borderRadius:4,backgroundImage:"url('/ui_panel.png')",backgroundSize:"100% 100%",imageRendering:"pixelated",padding:16,width:500,maxWidth:"95vw",boxShadow:`0 0 30px ${en.boss?"rgba(147,51,234,0.4)":"rgba(153,27,27,0.4)"}`}}>
       <div style={{display:"flex",justifyContent:"space-between",marginBottom:10,paddingBottom:8,borderBottom:"1px solid rgba(255,255,255,0.1)"}}>
         <div>
           <div style={{display:"flex",alignItems:"center",gap:10}}>

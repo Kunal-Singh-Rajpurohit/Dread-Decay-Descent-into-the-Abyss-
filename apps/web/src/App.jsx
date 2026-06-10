@@ -35,11 +35,6 @@ export default function App() {
   const [fov, setFov] = useState(new Set());
   const [seen, setSeen] = useState(new Set());
   const [floor, setFloor] = useState(1);
-  const [shake, setShake] = useState(0);
-  const [dNums, setDNums] = useState([]);
-  
-  // Frame counter for React (only for some UI updates, canvas loop is separate)
-  const [frame, setFrame] = useState(0);
 
   const canvasRef = useRef(null);
   const otherPlayersRef = useRef({});
@@ -64,9 +59,10 @@ export default function App() {
   // Update state ref for renderer
   useEffect(() => {
     stateRef.current = {
-      map: dng?.map || [], player, enemies, gi, events, npcs, traps, fov, seen, shake, dNums, particles: pSystem.particles, otherPlayers: Object.values(otherPlayersRef.current), t: frame
+      ...stateRef.current,
+      map: dng?.map || [], player, enemies, gi, events, npcs, traps, fov, seen, particles: pSystem.particles, otherPlayers: Object.values(otherPlayersRef.current)
     };
-  }, [dng, player, enemies, gi, events, npcs, traps, fov, seen, shake, dNums, frame]);
+  }, [dng, player, enemies, gi, events, npcs, traps, fov, seen]);
 
   // Main Render Loop
   useEffect(() => {
@@ -75,15 +71,13 @@ export default function App() {
     const loop = () => {
       if (canvasRef.current && stateRef.current.map.length > 0) {
         stateRef.current.t++;
-        setFrame(stateRef.current.t);
         if (stateRef.current.player && stateRef.current.player.torch > 0 && Math.random() < 0.12) {
           pSystem.emit('torch', stateRef.current.player.x, stateRef.current.player.y - 0.2);
         }
         pSystem.update();
-        setDNums(prev => prev.map(d => ({ ...d, cy: d.cy - 0.5, frame: d.frame + 1 })).filter(d => d.frame < 40));
+        stateRef.current.dNums = stateRef.current.dNums.map(d => ({ ...d, cy: d.cy - 0.5, frame: d.frame + 1 })).filter(d => d.frame < 40);
         if (stateRef.current.shake > 0) {
           stateRef.current.shake = Math.max(0, stateRef.current.shake - 0.5);
-          setShake(stateRef.current.shake);
         }
         drawFrame(canvasRef.current, stateRef.current);
       }
@@ -98,10 +92,10 @@ export default function App() {
   const addDNum = (x, y, val, color, crit) => {
     const cx = x * TS + TS / 2 + rng(-10, 10);
     const cy = y * TS + TS / 2 + rng(-10, 10);
-    setDNums(prev => [...prev, { cx, cy, value: val, color, crit, frame: 0 }]);
+    stateRef.current.dNums.push({ cx, cy, value: val, color, crit, frame: 0 });
   };
 
-  const triggerShake = (intensity) => setShake(intensity);
+  const triggerShake = (intensity) => { stateRef.current.shake = intensity; };
 
   function startGame(cls) {
     sfx.init(); 

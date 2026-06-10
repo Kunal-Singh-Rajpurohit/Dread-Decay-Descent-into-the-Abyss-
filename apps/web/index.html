@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Fear & Dark — A dark survival horror RPG dungeon crawler inspired by Fear & Hunger. Permadeath, body-part combat, crafting, and eldritch horrors." />
+    <title>Fear & Dark — Descent into Madness</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body, #root { width: 100%; height: 100%; overflow: hidden; background: #000; font-family: 'VT323', monospace; }
+      div, span, button, p, h1, h2, h3 { 
+        font-family: 'VT323', monospace !important; 
+        text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 2px 2px 3px rgba(0,0,0,0.9);
+      }
+      button { outline: none; }
+      .crt-overlay {
+        position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+        pointer-events: none; z-index: 9999;
+        background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+        background-size: 100% 4px, 3px 100%;
+        opacity: 0.6;
+      }
+      .cr-btn {
+        background: linear-gradient(180deg, #374151, #1f2937);
+        border: 2px solid #000;
+        border-bottom: 4px solid #000;
+        border-radius: 4px;
+        color: #fff;
+        padding: 5px 12px;
+        cursor: pointer;
+        transition: transform 0.05s, border-bottom 0.05s;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+      }
+      .cr-btn:hover { background: linear-gradient(180deg, #4b5563, #374151); }
+      .cr-btn:active { transform: translateY(2px); border-bottom: 2px solid #000; margin-bottom: 2px; }
+      .cr-btn.red { background: linear-gradient(180deg, #dc2626, #991b1b); }
+      .cr-btn.red:hover { background: linear-gradient(180deg, #ef4444, #dc2626); }
+      .cr-btn.blue { background: linear-gradient(180deg, #2563eb, #1d4ed8); }
+      .cr-btn.blue:hover { background: linear-gradient(180deg, #3b82f6, #2563eb); }
+    </style>
+  </head>
+  <body>
+    <div class="crt-overlay"></div>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

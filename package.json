@@ -1,0 +1,20 @@
+{
+  "name": "fear-and-dark",
+  "private": true,
+  "workspaces": ["apps/*", "packages/*"],
+  "scripts": {
+    "dev":       "turbo dev",
+    "build":     "turbo build",
+    "typecheck": "turbo typecheck",
+    "lint":      "turbo lint",
+    "db:push":   "turbo db:push",
+    "db:studio": "cd packages/db && npx drizzle-kit studio"
+  },
+  "devDependencies": {
+    "turbo":      "^1.13.0",
+    "typescript": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

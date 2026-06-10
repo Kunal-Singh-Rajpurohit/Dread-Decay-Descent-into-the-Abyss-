@@ -1,0 +1,50 @@
+version: "3.9"
+
+services:
+  # ── Primary Database ──────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB:       fear_and_dark
+      POSTGRES_USER:     admin
+      POSTGRES_PASSWORD: dev_secret_change_in_prod
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d fear_and_dark"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ── Session Cache ──────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --requirepass dev_redis_secret
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "--no-auth-warning", "-a", "dev_redis_secret", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ── API Server (optional – use `turbo dev` for local dev) ──
+  # api:
+  #   build: ./apps/api
+  #   ports: ["3001:3001"]
+  #   depends_on:
+  #     postgres: { condition: service_healthy }
+  #     redis:    { condition: service_healthy }
+  #   environment:
+  #     DATABASE_URL: postgresql://admin:dev_secret_change_in_prod@postgres:5432/fear_and_dark
+  #     REDIS_URL:    redis://:dev_redis_secret@redis:6379
+
+volumes:
+  pgdata:
+  redisdata:

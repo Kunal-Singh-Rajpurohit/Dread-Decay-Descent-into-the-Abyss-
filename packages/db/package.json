@@ -1,0 +1,24 @@
+{
+  "name": "@fear/db",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "db:push":    "drizzle-kit push",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio":  "drizzle-kit studio",
+    "db:generate":"drizzle-kit generate"
+  },
+  "exports": {
+    ".":          "./src/index.ts",
+    "./schema":   "./src/schema.ts",
+    "./client":   "./src/client.ts"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.30.0",
+    "postgres":    "^3.4.3"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.21.0",
+    "dotenv":      "^16.4.0"
+  }
+}

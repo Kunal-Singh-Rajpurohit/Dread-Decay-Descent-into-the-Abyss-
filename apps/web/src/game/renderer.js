@@ -184,6 +184,12 @@ export { SPRITES, ENEMY_MAP, ENEMY_BIG_MAP, PLAYER_MAP, ITEM_MAP };
 /* ═══════════════════════════════════════════════════════════════════════════ */
 /* ── Main render function ──────────────────────────────────────────────────  */
 /* ═══════════════════════════════════════════════════════════════════════════ */
+
+let currentCamX = null;
+let currentCamY = null;
+let currentPx = null;
+let currentPy = null;
+
 export function drawFrame(canvas, state) {
   const ctx = canvas.getContext('2d');
   const {
@@ -219,13 +225,53 @@ export function drawFrame(canvas, state) {
   ctx.fillStyle = '#000';
   ctx.fillRect(0, 0, W, H);
 
-  // ── Camera offset ──
-  // player is centered on the screen
-  let camX = 0, camY = 0;
+  // ── Smooth Player Interpolation ──
   if (player) {
-    camX = Math.round(W / 2 - (player.x * TS + TS / 2));
-    camY = Math.round(H / 2 - (player.y * TS + TS / 2));
+    const targetPx = player.x * TS + TS / 2;
+    const targetPy = player.y * TS + TS / 2;
+    
+    if (currentPx === null || Math.abs(currentPx - targetPx) > TS * 3 || Math.abs(currentPy - targetPy) > TS * 3) {
+      // Teleport if moving large distances (e.g. changing floors)
+      currentPx = targetPx;
+      currentPy = targetPy;
+    } else {
+      // Smoothly walk
+      currentPx += (targetPx - currentPx) * 0.25;
+      currentPy += (targetPy - currentPy) * 0.25;
+    }
   }
+
+  // ── Camera offset & clamping ──
+  const mapW = MW * TS;
+  const mapH = MH * TS;
+
+  let targetCamX = 0, targetCamY = 0;
+  if (player) {
+    // Center on smoothed player position
+    let tCx = W / 2 - currentPx;
+    let tCy = H / 2 - currentPy;
+    
+    // Clamp camera so it doesn't show black edges
+    if (W >= mapW) tCx = (W - mapW) / 2; // Center horizontally if screen is wider than map
+    else tCx = Math.max(W - mapW, Math.min(0, tCx));
+    
+    if (H >= mapH) tCy = (H - mapH) / 2; // Center vertically if screen is taller than map
+    else tCy = Math.max(H - mapH, Math.min(0, tCy));
+    
+    targetCamX = tCx;
+    targetCamY = tCy;
+  }
+
+  if (currentCamX === null || (player && (Math.abs(player.x * TS + TS / 2 - currentPx) > TS * 3))) {
+    currentCamX = targetCamX;
+    currentCamY = targetCamY;
+  } else {
+    currentCamX += (targetCamX - currentCamX) * 0.25;
+    currentCamY += (targetCamY - currentCamY) * 0.25;
+  }
+
+  const camX = Math.round(currentCamX);
+  const camY = Math.round(currentCamY);
 
   // ── Screen shake ──
   const sx = shake ? (Math.random() - 0.5) * shake * 2 : 0;
@@ -462,9 +508,9 @@ export function drawFrame(canvas, state) {
 
   // Player
   if (player) {
-    const px = player.x * TS + TS / 2;
+    const px = currentPx !== null ? currentPx : player.x * TS + TS / 2;
     const bob = Math.sin(t * 0.12) * 0.5;
-    const py = player.y * TS + TS / 2 + bob;
+    const py = (currentPy !== null ? currentPy : player.y * TS + TS / 2) + bob;
 
     // Radial glow halo
     const haloR = TS * 0.65;
@@ -514,8 +560,8 @@ export function drawFrame(canvas, state) {
     const wobbleX = Math.cos(t * 0.08) * 3;
     const wobbleY = Math.sin(t * 0.11) * 3;
     const bob = Math.sin(t * 0.12) * 0.5; // match player bob
-    const cx = player.x * TS + TS / 2 + wobbleX;
-    const cy = player.y * TS + TS / 2 + bob + wobbleY;
+    const cx = (currentPx !== null ? currentPx : player.x * TS + TS / 2) + wobbleX;
+    const cy = (currentPy !== null ? currentPy : player.y * TS + TS / 2) + bob + wobbleY;
 
     // Darkness radial gradient
     const dark = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);

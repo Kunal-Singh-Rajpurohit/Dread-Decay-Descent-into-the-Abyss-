@@ -37,6 +37,7 @@ export default function App() {
   const [floor, setFloor] = useState(1);
 
   const canvasRef = useRef(null);
+  const touchStartRef = useRef(null);
   const otherPlayersRef = useRef({});
   const stateRef = useRef({ map:[], player:null, enemies:[], gi:[], events:[], npcs:[], traps:[], fov:new Set(), seen:new Set(), shake:0, dNums:[], particles:[], otherPlayers:[], t:0 });
 
@@ -548,7 +549,6 @@ export default function App() {
   const npcHere = npcs.find(n => n.x === player.x && n.y === player.y);
 
   // --- Touch Swipe to Move ---
-  const touchStartRef = useRef(null);
   const handleTouchStart = (e) => {
     touchStartRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
   };

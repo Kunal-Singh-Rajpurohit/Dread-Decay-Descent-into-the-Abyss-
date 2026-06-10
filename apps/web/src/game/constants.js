@@ -3,7 +3,7 @@
 // Extracted from P5 §1
 // ═══════════════════════════════════════════════════════════════
 
-export const MW = 40, MH = 24, TS = 22;
+export const MW = 40, MH = 24, TS = 48;
 export const TR_FULL = 7, TR_DIM = 3, TR_DARK = 2;
 export const T = { W: 0, F: 1, S: 2, D: 3, TR: 4 }; // Wall, Floor, Stair, Door, Trap
 export const PMUL = { head: 2.0, torso: 1.0, rightArm: 0.7, leftArm: 0.7, rightLeg: 0.6, leftLeg: 0.6 };

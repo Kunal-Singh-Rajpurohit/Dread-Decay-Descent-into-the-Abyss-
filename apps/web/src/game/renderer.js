@@ -600,13 +600,13 @@ export function drawFrame(canvas, state) {
       ctx.globalAlpha = Math.max(0, alpha);
 
       if (d.crit) {
-        ctx.font = `bold ${Math.floor(16 * scale)}px "VT323", monospace`;
+        ctx.font = `bold ${Math.floor(26 * scale)}px "VT323", monospace`;
         ctx.fillStyle = d.color || '#fbbf24';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         drawText(ctx, `✦${d.value}`, d.cx, d.cy - rise, true);
       } else {
-        ctx.font = `bold ${Math.floor(13 * scale)}px "VT323", monospace`;
+        ctx.font = `bold ${Math.floor(20 * scale)}px "VT323", monospace`;
         ctx.fillStyle = d.color || '#ef4444';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';

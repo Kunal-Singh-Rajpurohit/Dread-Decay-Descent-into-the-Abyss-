@@ -554,35 +554,38 @@ export default function App() {
   const npcHere = npcs.find(n => n.x === player.x && n.y === player.y);
 
   return (
-    <div style={{ background: "#000", height: "100vh", display: "flex", flexDirection: "column", fontFamily: "'Courier New',monospace", color: "#9ca3af", overflow: "hidden", userSelect: "none", position: "relative" }}>
-      <div className="app-layout">
-        <div className="canvas-wrapper">
-          <canvas ref={canvasRef} width={MW * TS} height={MH * TS} style={{ imageRendering: "pixelated", border: "1px solid #111" }} />
-        </div>
+    <div className="app-layout">
+      <div className="canvas-wrapper">
+        <canvas ref={canvasRef} style={{ imageRendering: "pixelated" }} />
+      </div>
+
+      <div className="ui-overlay">
         <div className="side-panel-wrapper">
           <SidePanel player={player} floor={floor} />
         </div>
-      </div>
-      <div style={{ height: 90, borderTop: "1px solid #080808", padding: "6px 14px", overflowY: "auto", display: "flex", flexDirection: "column", justifyContent: "flex-end", background: "#020202" }}>
-        {msgs.map((m, i) => (
-          <div key={i} style={{ fontSize: 11, lineHeight: 1.6, color: i === msgs.length - 1 ? "#d1d5db" : i >= msgs.length - 3 ? "#4b5563" : "#1f2937", marginBottom: 2 }}>
-            {i === msgs.length - 1 ? "▸ " : ""}{m}
-          </div>
-        ))}
-      </div>
-      <div style={{ borderTop: "1px solid #050505", padding: "8px 14px", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#000", flexShrink: 0 }}>
-        <div style={{ fontSize: 10, color: "#111", lineHeight: 2, flex: 1 }}>
-          <div>WASD: Move · Z: Act · I: Inv · J: Journal · Q: Ability</div>
-          {npcHere ? <div style={{ color: "#9333ea" }}>▲ {npcHere.name} — press Z</div>
-            : itemHere ? <div style={{ color: "#d97706" }}>▲ {ITEMS[itemHere.iid]?.name} — press Z</div>
-              : floor === 5 ? <div style={{ color: "#7c3aed" }}>⚡ Floor 5 — The Warden</div>
-                : floor === 10 ? <div style={{ color: "#f97316" }}>⚡⚡ Floor 10 — The Colossus</div>
-                  : <div style={{ color: "#1a1a1a" }}>Floor {floor}/{MAX_FLOOR} · Stairs ▼</div>}
+
+        <div className="messages-wrapper">
+          {msgs.map((m, i) => (
+            <div key={i} style={{ fontSize: 11, lineHeight: 1.6, color: i === msgs.length - 1 ? "#d1d5db" : i >= msgs.length - 3 ? "#9ca3af" : "#6b7280", marginBottom: 2, textShadow: "1px 1px 2px #000" }}>
+              {i === msgs.length - 1 ? "▸ " : ""}{m}
+            </div>
+          ))}
         </div>
-        <button onClick={() => { sfx.init(); sfx.toggle(); }} style={{ border: "1px solid #1a1a1a", background: "none", color: "#374151", fontSize: 9, padding: "4px 8px", cursor: "pointer", fontFamily: "'Courier New',monospace", marginRight: 8 }}>
-          {sfx.muted ? "🔇" : "🔊"}
-        </button>
-        <DPad onMove={doMove} onPickup={doPickup} onInventory={() => !combat && !evMod && !lvMod && !diagMod && setShowInv(true)} onJournal={() => !combat && !evMod && !lvMod && !diagMod && setShowJrnl(true)} />
+
+        <div className="bottom-bar">
+          <div style={{ fontSize: 10, color: "#d1d5db", lineHeight: 2, flex: 1, textShadow: "1px 1px 2px #000" }}>
+            <div style={{color: "#9ca3af"}}>WASD: Move · Z: Act · I: Inv · J: Journal · Q: Ability</div>
+            {npcHere ? <div style={{ color: "#d8b4fe" }}>▲ {npcHere.name} — press Z</div>
+              : itemHere ? <div style={{ color: "#fcd34d" }}>▲ {ITEMS[itemHere.iid]?.name} — press Z</div>
+                : floor === 5 ? <div style={{ color: "#d8b4fe" }}>⚡ Floor 5 — The Warden</div>
+                  : floor === 10 ? <div style={{ color: "#fdba74" }}>⚡⚡ Floor 10 — The Colossus</div>
+                    : <div style={{ color: "#9ca3af" }}>Floor {floor}/{MAX_FLOOR} · Stairs ▼</div>}
+          </div>
+          <button onClick={() => { sfx.init(); sfx.toggle(); }} style={{ border: "1px solid #333", background: "rgba(0,0,0,0.5)", color: "#d1d5db", fontSize: 12, padding: "6px 10px", cursor: "pointer", fontFamily: "'Courier New',monospace", marginRight: 16 }}>
+            {sfx.muted ? "🔇" : "🔊"}
+          </button>
+          <DPad onMove={doMove} onPickup={doPickup} onInventory={() => !combat && !evMod && !lvMod && !diagMod && setShowInv(true)} onJournal={() => !combat && !evMod && !lvMod && !diagMod && setShowJrnl(true)} />
+        </div>
       </div>
       
       {combat && <CombatUI combat={combat} player={player} onAction={doCombat} onPart={part => setCombat(p => ({ ...p, part }))} onAbility={doCombatAbility} />}

@@ -41,51 +41,89 @@
       .cr-btn.blue { background: linear-gradient(180deg, #2563eb, #1d4ed8); }
       .cr-btn.blue:hover { background: linear-gradient(180deg, #3b82f6, #2563eb); }
       
-      /* Responsive Layout overrides */
+      /* Immersive Full-Screen Layout */
       .app-layout {
-        display: flex;
-        flex-direction: row;
-        flex: 1;
+        position: relative;
+        width: 100vw;
+        height: 100vh;
         overflow: hidden;
-        min-height: 0;
+        background: #000;
+      }
+      .canvas-wrapper {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        background: #000;
+      }
+      canvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+      .ui-overlay {
+        position: absolute;
+        inset: 0;
+        z-index: 10;
+        pointer-events: none;
+      }
+      .ui-overlay > * {
+        pointer-events: auto;
       }
       .side-panel-wrapper {
-        width: 180px;
-        padding: 10px 12px;
-        border-left: 1px solid #0a0a0a;
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        width: 220px;
+        padding: 12px;
+        background: rgba(5,5,5,0.85);
+        border: 1px solid #1a1a1a;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.8);
+        border-radius: 6px;
+        max-height: calc(100vh - 120px);
         overflow-y: auto;
-        flex-shrink: 0;
-        background: #050505;
+        backdrop-filter: blur(2px);
       }
       .side-panel-content {
         display: flex;
         flex-direction: column;
         gap: 6px;
       }
-      .canvas-wrapper {
-        flex: 1;
-        overflow: hidden;
+      .messages-wrapper {
+        position: absolute;
+        bottom: 80px;
+        left: 16px;
+        width: 360px;
+        max-width: calc(100vw - 32px);
+        max-height: 140px;
+        overflow-y: hidden;
         display: flex;
-        align-items: center;
-        justify-content: center;
-        background: #020202;
-        padding: 8px;
+        flex-direction: column;
+        justify-content: flex-end;
+        background: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.8));
+        padding: 12px;
+        border-radius: 4px;
+        pointer-events: none; /* Let clicks pass through to canvas if needed */
       }
-      canvas {
-        max-width: 100%;
-        max-height: 100%;
-        object-fit: contain;
+      .bottom-bar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding: 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        background: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.9) 40%, rgba(0,0,0,1));
       }
 
       @media (max-width: 768px) {
-        .app-layout {
-          flex-direction: column;
-        }
         .side-panel-wrapper {
-          width: 100%;
+          width: calc(100vw - 20px);
           height: 150px;
-          border-left: none;
-          border-top: 1px solid #0a0a0a;
+          top: 10px;
+          right: 10px;
+          left: 10px;
+          max-height: none;
           overflow-x: auto;
           overflow-y: hidden;
         }
@@ -98,14 +136,19 @@
           width: 160px;
           padding-right: 12px;
           margin-right: 6px;
-          border-right: 1px solid #111;
-          border-bottom: none !important;
+          border-right: 1px solid rgba(255,255,255,0.1);
         }
-        .canvas-wrapper {
-          padding: 2px;
+        .messages-wrapper {
+          bottom: 140px;
+          pointer-events: none;
+        }
+        .bottom-bar {
+          flex-direction: column;
+          align-items: center;
+          gap: 12px;
         }
       }
-  </style>
+    </style>
   </head>
   <body>
     <div class="crt-overlay"></div>

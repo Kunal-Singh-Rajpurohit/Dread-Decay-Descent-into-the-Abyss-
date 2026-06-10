@@ -208,8 +208,9 @@ export function drawFrame(canvas, state) {
     ctx.restore();
   }
 
-  const W = MW * TS;
-  const H = MH * TS;
+  const rect = canvas.parentElement.getBoundingClientRect();
+  const W = rect.width;
+  const H = rect.height;
   canvas.width  = W;
   canvas.height = H;
   ctx.imageSmoothingEnabled = false;
@@ -218,11 +219,19 @@ export function drawFrame(canvas, state) {
   ctx.fillStyle = '#000';
   ctx.fillRect(0, 0, W, H);
 
+  // ── Camera offset ──
+  // player is centered on the screen
+  let camX = 0, camY = 0;
+  if (player) {
+    camX = Math.round(W / 2 - (player.x * TS + TS / 2));
+    camY = Math.round(H / 2 - (player.y * TS + TS / 2));
+  }
+
   // ── Screen shake ──
   const sx = shake ? (Math.random() - 0.5) * shake * 2 : 0;
   const sy = shake ? (Math.random() - 0.5) * shake * 2 : 0;
   ctx.save();
-  ctx.translate(sx, sy);
+  ctx.translate(sx + camX, sy + camY);
 
   // ── Build reveal-status lookup for traps ──
   const trapMap = {};
@@ -515,7 +524,7 @@ export function drawFrame(canvas, state) {
     dark.addColorStop(0.65, 'rgba(0,0,0,0.65)');
     dark.addColorStop(1,    'rgba(0,0,0,0.97)');
     ctx.fillStyle = dark;
-    ctx.fillRect(0, 0, W, H);
+    ctx.fillRect(-camX - 20, -camY - 20, W + 40, H + 40);
 
     // Warm amber tint (or cold blue when torch=0)
     const tintR = r * 0.6;
@@ -528,39 +537,10 @@ export function drawFrame(canvas, state) {
       tint.addColorStop(1, 'rgba(255,140,0,0)');
     }
     ctx.fillStyle = tint;
-    ctx.fillRect(0, 0, W, H);
+    ctx.fillRect(-camX - 20, -camY - 20, W + 40, H + 40);
   }
 
-  // ══════════ Pass 5: Fear vignette ══════════
-  if (player) {
-    const fearPct = (player.fear ?? 0) / 100;
-    if (fearPct > 0.4) {
-      const intensity = ((fearPct - 0.4) / 0.6) * 0.35;
-      const pulse = intensity * (0.8 + 0.2 * Math.sin(t * 0.07));
-      const vig = ctx.createRadialGradient(W / 2, H / 2, W * 0.25, W / 2, H / 2, W * 0.7);
-      vig.addColorStop(0, 'rgba(120,0,0,0)');
-      vig.addColorStop(1, `rgba(120,0,0,${pulse})`);
-      ctx.fillStyle = vig;
-      ctx.fillRect(0, 0, W, H);
-    }
-  }
-
-  // ══════════ Pass 5: Ambient Fog ══════════
-  ctx.globalAlpha = 0.06;
-  const fx = t * 0.3;
-  const fy = Math.sin(t * 0.015) * 40;
-  for (let i = 0; i < 4; i++) {
-    const fogCx = ((fx * (i + 1) * 1.5 + i * 200) % (W + 400)) - 200;
-    const fogCy = (H / 2) + fy + (i * 50 - 100);
-    const fgrad = ctx.createRadialGradient(fogCx, fogCy, 0, fogCx, fogCy, 250);
-    fgrad.addColorStop(0, 'rgba(150, 160, 180, 0.4)');
-    fgrad.addColorStop(1, 'rgba(150, 160, 180, 0)');
-    ctx.fillStyle = fgrad;
-    ctx.fillRect(0, 0, W, H);
-  }
-  ctx.globalAlpha = 1.0;
-
-  // ══════════ Pass 6: Floating damage numbers ══════════
+  // ══════════ Pass 5: Floating damage numbers ══════════
   if (dNums) {
     for (const d of dNums) {
       if (d.frame >= 40) continue;
@@ -590,6 +570,38 @@ export function drawFrame(canvas, state) {
     }
   }
 
-  // Restore after screen shake
+  // Restore camera translation, but keep shake for screen effects
+  ctx.restore();
+  ctx.save();
+  ctx.translate(sx, sy);
+
+  // ══════════ Pass 6: Fear vignette (Screen Space) ══════════
+  if (player) {
+    const fearPct = (player.fear ?? 0) / 100;
+    if (fearPct > 0.4) {
+      const intensity = ((fearPct - 0.4) / 0.6) * 0.35;
+      const pulse = intensity * (0.8 + 0.2 * Math.sin(t * 0.07));
+      const vig = ctx.createRadialGradient(W / 2, H / 2, Math.min(W,H) * 0.25, W / 2, H / 2, Math.min(W,H) * 0.7);
+      vig.addColorStop(0, 'rgba(120,0,0,0)');
+      vig.addColorStop(1, `rgba(120,0,0,${pulse})`);
+      ctx.fillStyle = vig;
+      ctx.fillRect(0, 0, W, H);
+    }
+  }
+
+  // ══════════ Pass 7: Ambient Fog (Screen Space) ══════════
+  ctx.globalAlpha = 0.06;
+  const fx = t * 0.3;
+  const fy = Math.sin(t * 0.015) * 40;
+  for (let i = 0; i < 4; i++) {
+    const fogCx = ((fx * (i + 1) * 1.5 + i * 200) % (W + 400)) - 200;
+    const fogCy = (H / 2) + fy + (i * 50 - 100);
+    const fgrad = ctx.createRadialGradient(fogCx, fogCy, 0, fogCx, fogCy, 250);
+    fgrad.addColorStop(0, 'rgba(150, 160, 180, 0.4)');
+    fgrad.addColorStop(1, 'rgba(150, 160, 180, 0)');
+    ctx.fillStyle = fgrad;
+    ctx.fillRect(0, 0, W, H);
+  }
+  ctx.globalAlpha = 1.0;
   ctx.restore();
 }

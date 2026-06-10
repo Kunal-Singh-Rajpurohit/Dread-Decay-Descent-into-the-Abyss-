@@ -555,11 +555,11 @@ export default function App() {
 
   return (
     <div style={{ background: "#000", height: "100vh", display: "flex", flexDirection: "column", fontFamily: "'Courier New',monospace", color: "#9ca3af", overflow: "hidden", userSelect: "none", position: "relative" }}>
-      <div style={{ display: "flex", flex: 1, overflow: "hidden", minHeight: 0 }}>
-        <div style={{ flex: 1, overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", padding: 0, minWidth: 0, background: "#020202" }}>
-          <canvas ref={canvasRef} width={MW * TS} height={MH * TS} style={{ imageRendering: "pixelated", flexShrink: 0, border: "1px solid #111" }} />
+      <div className="app-layout">
+        <div className="canvas-wrapper">
+          <canvas ref={canvasRef} width={MW * TS} height={MH * TS} style={{ imageRendering: "pixelated", border: "1px solid #111" }} />
         </div>
-        <div style={{ width: 180, padding: "10px 12px", borderLeft: "1px solid #0a0a0a", overflow: "auto", flexShrink: 0, background: "#050505" }}>
+        <div className="side-panel-wrapper">
           <SidePanel player={player} floor={floor} />
         </div>
       </div>

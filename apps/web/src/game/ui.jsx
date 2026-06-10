@@ -16,36 +16,43 @@ export function SidePanel({player,floor}){
   const wpn=player.weapon?ITEMS[player.weapon]:null,arm=player.armor?ITEMS[player.armor]:null,helm=player.helmet?ITEMS[player.helmet]:null;
   const lv=getLv(player.xp),nextXP=XP_LV[Math.min(lv+1,XP_LV.length-1)];
   const abl=player.cls?ABLS[CLS[player.cls]?.ability]:null;
-  return(<div style={{fontSize:10,color:"#6b7280"}}>
-    <div style={{borderBottom:"1px solid #111",paddingBottom:5,marginBottom:5}}>
-      <div style={{color:"#e5e7eb",fontWeight:"bold",fontSize:12,letterSpacing:".05em"}}>{player.name}</div>
-      <div style={{color:"#2d2d2d"}}>Fl.{floor} · Lv.{lv} · {player.steps}st · K:{player.kills}</div>
-      <div style={{color:"#1a1a1a",fontSize:9}}>XP {player.xp}/{nextXP}</div>
+  
+  return(<div className="side-panel-content" style={{fontSize:10,color:"#6b7280"}}>
+    <div className="side-panel-section">
+      <div style={{borderBottom:"1px solid #111",paddingBottom:5,marginBottom:5}}>
+        <div style={{color:"#e5e7eb",fontWeight:"bold",fontSize:13,letterSpacing:".05em"}}>{player.name}</div>
+        <div style={{color:"#2d2d2d", fontSize:11}}>Fl.{floor} · Lv.{lv} · {player.steps}st · K:{player.kills}</div>
+        <div style={{color:"#1a1a1a",fontSize:10}}>XP {player.xp}/{nextXP}</div>
+      </div>
+      <Bar label="HP"     val={player.hp}    max={player.maxHp}/>
+      <Bar label="HUNGER" val={player.hunger} max={100} hi="#d97706" mid="#b45309"/>
+      <Bar label="FEAR"   val={player.fear}   max={100} hi="#4b5563" mid="#7c3aed"/>
+      <Bar label="TORCH"  val={player.torch}  max={600} hi="#ca8a04" mid="#92400e"/>
     </div>
-    <Bar label="HP"     val={player.hp}    max={player.maxHp}/>
-    <Bar label="HUNGER" val={player.hunger} max={100} hi="#d97706" mid="#b45309"/>
-    <Bar label="FEAR"   val={player.fear}   max={100} hi="#4b5563" mid="#7c3aed"/>
-    <Bar label="TORCH"  val={player.torch}  max={600} hi="#ca8a04" mid="#92400e"/>
-    <div style={{marginTop:5,paddingTop:4,borderTop:"1px solid #111",fontSize:9,color:"#374151"}}>
-      <div>ATK:{getAtk(player)} DEF:{getDef(player)} AGI:{player.agi}</div>
-      {wpn&&<div style={{color:"#d97706",marginTop:1}}>⚔ {wpn.name}</div>}
-      {arm&&<div style={{color:"#374151",marginTop:1}}>🛡 {arm.name}</div>}
-      {helm&&<div style={{color:"#374151",marginTop:1}}>⛑ {helm.name}</div>}
+    
+    <div className="side-panel-section" style={{fontSize:10}}>
+      <div style={{paddingBottom:4,borderBottom:"1px solid #111",marginBottom:4,color:"#374151"}}>
+        <div>ATK:{getAtk(player)} DEF:{getDef(player)} AGI:{player.agi}</div>
+        {wpn&&<div style={{color:"#d97706",marginTop:2}}>⚔ {wpn.name}</div>}
+        {arm&&<div style={{color:"#4b5563",marginTop:2}}>🛡 {arm.name}</div>}
+        {helm&&<div style={{color:"#4b5563",marginTop:2}}>⛑ {helm.name}</div>}
+      </div>
+      {abl&&<div style={{marginTop:4,fontSize:9,color:player.abilityCD<=0?"#1d4ed8":"#1a1a1a"}}>
+        ✦ {abl.name}{player.abilityCD>0?` [CD:${player.abilityCD}]`:` [Q]`}
+      </div>}
+      {player.statuses.length>0&&<div style={{display:"flex",flexWrap:"wrap",gap:2,marginTop:4}}>
+        {player.statuses.map((s,i)=><span key={i} style={{fontSize:8,padding:"1px 4px",border:`1px solid ${SCOL[s.type]||"#444"}`,color:SCOL[s.type]||"#888",borderRadius:2}}>{s.type}{s.dur>0?` ${s.dur}`:""}</span>)}
+      </div>}
     </div>
-    {abl&&<div style={{marginTop:3,fontSize:8,color:player.abilityCD<=0?"#1d4ed8":"#1a1a1a",borderTop:"1px solid #0d0d0d",paddingTop:3}}>
-      ✦ {abl.name}{player.abilityCD>0?` [CD:${player.abilityCD}]`:` [Q]`}
-    </div>}
-    {player.statuses.length>0&&<div style={{display:"flex",flexWrap:"wrap",gap:2,marginTop:4}}>
-      {player.statuses.map((s,i)=><span key={i} style={{fontSize:7,padding:"1px 3px",border:`1px solid ${SCOL[s.type]||"#444"}`,color:SCOL[s.type]||"#888"}}>{s.type}{s.dur>0?` ${s.dur}`:""}</span>)}
-    </div>}
-    <div style={{borderTop:"1px solid #111",paddingTop:4,marginTop:4}}>
-      <div style={{fontSize:9,color:"#1f2937",marginBottom:3}}>BODY</div>
+
+    <div className="side-panel-section">
+      <div style={{fontSize:10,color:"#1f2937",marginBottom:4,fontWeight:"bold"}}>BODY PARTS</div>
       {Object.entries(player.parts).map(([k,p])=>{
         const pct=p.severed?0:(p.hp/p.max)*100,col=p.severed?"#3a0000":pct>60?"#166534":pct>25?"#92400e":"#7f1d1d";
-        return(<div key={k} style={{display:"flex",alignItems:"center",gap:3,marginBottom:2}}>
-          <span style={{width:30,fontSize:8,color:"#222"}}>{PLAB[k]}</span>
-          <div style={{flex:1,height:2,background:"#0a0a0a",borderRadius:1}}><div style={{height:2,width:`${pct}%`,background:col,borderRadius:1}}/></div>
-          {p.severed&&<span style={{fontSize:7,color:"#7f1d1d"}}>✗</span>}
+        return(<div key={k} style={{display:"flex",alignItems:"center",gap:4,marginBottom:3}}>
+          <span style={{width:35,fontSize:9,color:"#444"}}>{PLAB[k]}</span>
+          <div style={{flex:1,height:4,background:"#0a0a0a",borderRadius:2}}><div style={{height:4,width:`${pct}%`,background:col,borderRadius:2}}/></div>
+          {p.severed&&<span style={{fontSize:8,color:"#7f1d1d"}}>✗</span>}
         </div>);
       })}
     </div>
@@ -289,20 +296,22 @@ export function LevelUpModal({level,onChoose}){
 }
 
 export function DPad({onMove,onPickup,onInventory,onJournal}){
-  const bs={width:40,height:40,border:"1px solid #1a1a1a",background:"#040404",color:"#374151",fontSize:14,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",touchAction:"none",userSelect:"none",fontFamily:"monospace"};
-  return(<div style={{display:"flex",gap:8,alignItems:"center",flexShrink:0}}>
-    <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:3}}>
-      <button style={bs} onPointerDown={e=>{e.preventDefault();onMove(0,-1);}}>▲</button>
-      <div style={{display:"flex",gap:3}}>
-        <button style={bs} onPointerDown={e=>{e.preventDefault();onMove(-1,0);}}>◄</button>
-        <button style={bs} onPointerDown={e=>{e.preventDefault();onMove(0,1);}}>▼</button>
-        <button style={bs} onPointerDown={e=>{e.preventDefault();onMove(1,0);}}>►</button>
+  const bs={width:48,height:48,border:"2px solid #000",borderBottom:"4px solid #000",borderRadius:4,background:"linear-gradient(180deg, #374151, #1f2937)",color:"#fff",fontSize:18,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",touchAction:"manipulation",userSelect:"none",fontFamily:"monospace",boxShadow:"0 4px 6px rgba(0,0,0,0.5)",transition:"transform 0.05s"};
+  const act={...bs,width:64,fontSize:10,fontWeight:"bold"};
+  
+  return(<div style={{display:"flex",gap:12,alignItems:"center",flexShrink:0}}>
+    <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:4}}>
+      <button style={bs} onPointerDown={e=>{e.preventDefault();onMove(0,-1);}} onPointerUp={e=>e.currentTarget.style.transform="translateY(0)"} onPointerLeave={e=>e.currentTarget.style.transform="translateY(0)"} onPointerCancel={e=>e.currentTarget.style.transform="translateY(0)"} onContextMenu={e=>e.preventDefault()}>▲</button>
+      <div style={{display:"flex",gap:4}}>
+        <button style={bs} onPointerDown={e=>{e.preventDefault();onMove(-1,0);}} onPointerUp={e=>e.currentTarget.style.transform="translateY(0)"} onPointerLeave={e=>e.currentTarget.style.transform="translateY(0)"} onPointerCancel={e=>e.currentTarget.style.transform="translateY(0)"} onContextMenu={e=>e.preventDefault()}>◄</button>
+        <button style={bs} onPointerDown={e=>{e.preventDefault();onMove(0,1);}} onPointerUp={e=>e.currentTarget.style.transform="translateY(0)"} onPointerLeave={e=>e.currentTarget.style.transform="translateY(0)"} onPointerCancel={e=>e.currentTarget.style.transform="translateY(0)"} onContextMenu={e=>e.preventDefault()}>▼</button>
+        <button style={bs} onPointerDown={e=>{e.preventDefault();onMove(1,0);}} onPointerUp={e=>e.currentTarget.style.transform="translateY(0)"} onPointerLeave={e=>e.currentTarget.style.transform="translateY(0)"} onPointerCancel={e=>e.currentTarget.style.transform="translateY(0)"} onContextMenu={e=>e.preventDefault()}>►</button>
       </div>
     </div>
-    <div style={{display:"flex",flexDirection:"column",gap:3}}>
-      <button style={{...bs,width:54,fontSize:9}} onPointerDown={e=>{e.preventDefault();onPickup();}}>Z·Act</button>
-      <button style={{...bs,width:54,fontSize:9}} onPointerDown={e=>{e.preventDefault();onInventory();}}>I·Inv</button>
-      <button style={{...bs,width:54,fontSize:9}} onPointerDown={e=>{e.preventDefault();onJournal();}}>J·Jrnl</button>
+    <div style={{display:"flex",flexDirection:"column",gap:4}}>
+      <button style={act} onPointerDown={e=>{e.preventDefault();onPickup();}} onPointerUp={e=>e.currentTarget.style.transform="translateY(0)"} onPointerLeave={e=>e.currentTarget.style.transform="translateY(0)"} onContextMenu={e=>e.preventDefault()}>Z · ACT</button>
+      <button style={act} onPointerDown={e=>{e.preventDefault();onInventory();}} onPointerUp={e=>e.currentTarget.style.transform="translateY(0)"} onPointerLeave={e=>e.currentTarget.style.transform="translateY(0)"} onContextMenu={e=>e.preventDefault()}>I · INV</button>
+      <button style={act} onPointerDown={e=>{e.preventDefault();onJournal();}} onPointerUp={e=>e.currentTarget.style.transform="translateY(0)"} onPointerLeave={e=>e.currentTarget.style.transform="translateY(0)"} onContextMenu={e=>e.preventDefault()}>J · JRNL</button>
     </div>
   </div>);
 }

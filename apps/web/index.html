@@ -40,7 +40,72 @@
       .cr-btn.red:hover { background: linear-gradient(180deg, #ef4444, #dc2626); }
       .cr-btn.blue { background: linear-gradient(180deg, #2563eb, #1d4ed8); }
       .cr-btn.blue:hover { background: linear-gradient(180deg, #3b82f6, #2563eb); }
-    </style>
+      
+      /* Responsive Layout overrides */
+      .app-layout {
+        display: flex;
+        flex-direction: row;
+        flex: 1;
+        overflow: hidden;
+        min-height: 0;
+      }
+      .side-panel-wrapper {
+        width: 180px;
+        padding: 10px 12px;
+        border-left: 1px solid #0a0a0a;
+        overflow-y: auto;
+        flex-shrink: 0;
+        background: #050505;
+      }
+      .side-panel-content {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .canvas-wrapper {
+        flex: 1;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #020202;
+        padding: 8px;
+      }
+      canvas {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+      }
+
+      @media (max-width: 768px) {
+        .app-layout {
+          flex-direction: column;
+        }
+        .side-panel-wrapper {
+          width: 100%;
+          height: 150px;
+          border-left: none;
+          border-top: 1px solid #0a0a0a;
+          overflow-x: auto;
+          overflow-y: hidden;
+        }
+        .side-panel-content {
+          flex-direction: row;
+          width: max-content;
+          height: 100%;
+        }
+        .side-panel-section {
+          width: 160px;
+          padding-right: 12px;
+          margin-right: 6px;
+          border-right: 1px solid #111;
+          border-bottom: none !important;
+        }
+        .canvas-wrapper {
+          padding: 2px;
+        }
+      }
+  </style>
   </head>
   <body>
     <div class="crt-overlay"></div>

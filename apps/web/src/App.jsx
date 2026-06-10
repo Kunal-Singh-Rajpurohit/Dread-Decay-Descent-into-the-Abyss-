@@ -547,9 +547,32 @@ export default function App() {
   const itemHere = gi.find(g => g.x === player.x && g.y === player.y);
   const npcHere = npcs.find(n => n.x === player.x && n.y === player.y);
 
+  // --- Touch Swipe to Move ---
+  const touchStartRef = useRef(null);
+  const handleTouchStart = (e) => {
+    touchStartRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+  };
+  const handleTouchEnd = (e) => {
+    if (!touchStartRef.current) return;
+    const dx = e.changedTouches[0].clientX - touchStartRef.current.x;
+    const dy = e.changedTouches[0].clientY - touchStartRef.current.y;
+    touchStartRef.current = null;
+    
+    // Require a minimum swipe distance to avoid accidental taps
+    if (Math.abs(dx) < 30 && Math.abs(dy) < 30) return; 
+
+    if (Math.abs(dx) > Math.abs(dy)) {
+      if (dx > 0) doMove(1, 0); // Right
+      else doMove(-1, 0); // Left
+    } else {
+      if (dy > 0) doMove(0, 1); // Down
+      else doMove(0, -1); // Up
+    }
+  };
+
   return (
     <div className="app-layout">
-      <div className="canvas-wrapper">
+      <div className="canvas-wrapper" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} style={{ touchAction: 'none' }}>
         <canvas ref={canvasRef} style={{ imageRendering: "pixelated" }} />
       </div>
 
